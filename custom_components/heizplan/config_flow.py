@@ -21,6 +21,7 @@ from .const import (
     CONF_MODE_ENTITY,
     CONF_MODE_HEAT,
     CONF_MODE_VACATION,
+    CONF_OFF_INACTIVE,
     CONF_SEASON,
     CONF_WORKDAY,
     DEFAULT_MODE,
@@ -58,6 +59,7 @@ def _schema(with_name: bool) -> vol.Schema:
             ),
             vol.Optional(CONF_MODE_HEAT): selector.TextSelector(),
             vol.Optional(CONF_MODE_VACATION): selector.TextSelector(),
+            vol.Optional(CONF_OFF_INACTIVE, default=False): selector.BooleanSelector(),
             vol.Optional(CONF_WORKDAY): selector.EntitySelector(
                 selector.EntitySelectorConfig(
                     domain=["calendar", "binary_sensor", "input_boolean"]

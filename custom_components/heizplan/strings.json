@@ -12,7 +12,8 @@
           "mode_entity": "Heating mode (optional)",
           "mode_heat": "Option \"heating\"",
           "mode_vacation": "Option \"vacation\"",
-          "workday_entity": "Holidays (optional)"
+          "workday_entity": "Holidays (optional)",
+          "off_when_inactive": "Turn thermostat off while no plan is active"
         },
         "data_description": {
           "climate": "The plan switches this thermostat (comfort / eco / frost as preset).",
@@ -20,7 +21,8 @@
           "mode_entity": "Central selection, e.g. off / heating / vacation.",
           "mode_heat": "Option text for the normal plan, exactly as in the selection.",
           "mode_vacation": "Option text for the vacation plan (empty = no vacation plan).",
-          "workday_entity": "Holiday calendar or workday sensor. Adds a separate day \"holiday\"."
+          "workday_entity": "Holiday calendar or workday sensor. Adds a separate day \"holiday\".",
+          "off_when_inactive": "The thermostat is turned off outside the heating season or while heating mode is off, and turned on again afterwards."
         }
       }
     },
@@ -42,7 +44,8 @@
           "mode_entity": "Heating mode (optional)",
           "mode_heat": "Option \"heating\"",
           "mode_vacation": "Option \"vacation\"",
-          "workday_entity": "Holidays (optional)"
+          "workday_entity": "Holidays (optional)",
+          "off_when_inactive": "Turn thermostat off while no plan is active"
         },
         "data_description": {
           "climate": "The plan switches this thermostat (comfort / eco / frost as preset).",
@@ -50,7 +53,8 @@
           "mode_entity": "Central selection, e.g. off / heating / vacation.",
           "mode_heat": "Option text for the normal plan, exactly as in the selection.",
           "mode_vacation": "Option text for the vacation plan (empty = no vacation plan).",
-          "workday_entity": "Holiday calendar or workday sensor. Adds a separate day \"holiday\"."
+          "workday_entity": "Holiday calendar or workday sensor. Adds a separate day \"holiday\".",
+          "off_when_inactive": "The thermostat is turned off outside the heating season or while heating mode is off, and turned on again afterwards."
         }
       }
     },

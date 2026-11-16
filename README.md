@@ -35,6 +35,7 @@ Die Integration ersetzt die Scheduler-Komponente für die Heizplan Card: Statt v
 | Heizperiode | Schalter; Plan läuft nur bei „an“ |
 | Heizmodus | Auswahl-Entität |
 | Option „Heizen“ / „Urlaub“ | Optionstexte der Auswahl für Normal- und Urlaubsplan |
+| Thermostat ausschalten, wenn kein Plan aktiv ist | Schaltet das Thermostat bei Heizmodus „Aus“ oder außerhalb der Heizperiode aus und danach wieder ein |
 | Feiertage | Feiertagskalender (`calendar`, an = Feiertag) oder Arbeitstag-Sensor (aus = Feiertag) |
 
 In der Karte kann als Entität weiter das Thermostat stehen. Wer das Thermostat später tauschen will, ohne die Karte anzufassen, wählt in der Karte stattdessen den Raum (`sensor.heizplan_<raum>`).
@@ -55,9 +56,9 @@ Attribute: `active_plan`, `next_change`, `next_mode`, `override_until`, `climate
 
 - Zu jedem Wechselpunkt, beim Speichern eines Plans und sobald ein Plan aktiv wird (Heizperiode an, Heizmodus gewechselt, Feiertag beginnt), ruft die Integration `climate.set_preset_mode` auf.
 - Kennt das Thermostat kein Preset `frost`, aber `away`, wird für Frostschutz `away` gesetzt (Better Thermostat).
-- Ist kein Plan aktiv, schaltet die Integration nichts. Das Ausschalten der Heizung übernimmt z. B. das Blueprint „Heizung aus“.
+- Ist kein Plan aktiv, schaltet die Integration nichts. Mit der Option „Thermostat ausschalten, wenn kein Plan aktiv ist“ schaltet sie das Thermostat einmal aus und wieder ein, sobald ein Plan aktiv wird. Ein Thermostat, das du selbst ausgeschaltet hast, schaltet sie nicht ein.
 - Feiertag gilt Mo–Fr. Ohne eigenen Feiertagsplan gilt der Sonntag.
 
 ## Stand
 
-Version 0.1.0. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
+Version 0.2.0. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
