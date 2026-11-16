@@ -1,3 +1,5 @@
+<img src="icon.svg" width="96" align="right" alt="Heizplan">
+
 # Heizplan
 
 Home-Assistant-Integration für Wochenpläne je Raum. Sie schaltet ein Raumthermostat (z. B. Versatile Thermostat oder Better Thermostat) zu festen Zeiten zwischen **Komfort**, **Eco** und **Frostschutz** um. Bedient wird sie mit der [Heizplan Card](https://github.com/juergenschorb/claude-homeassistant).
@@ -61,4 +63,4 @@ Attribute: `active_plan`, `next_change`, `next_mode`, `override_until`, `climate
 
 ## Stand
 
-Version 0.2.1. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
+Version 0.2.2. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
