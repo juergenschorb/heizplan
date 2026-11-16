@@ -58,9 +58,10 @@ Attribute: `active_plan`, `next_change`, `next_mode`, `override_until`, `climate
 
 - Zu jedem Wechselpunkt, beim Speichern eines Plans und sobald ein Plan aktiv wird (Heizperiode an, Heizmodus gewechselt, Feiertag beginnt), ruft die Integration `climate.set_preset_mode` auf.
 - Kennt das Thermostat kein Preset `frost`, aber `away`, wird für Frostschutz `away` gesetzt (Better Thermostat).
-- Ist kein Plan aktiv, schaltet die Integration nichts. Mit der Option „Thermostat ausschalten, wenn kein Plan aktiv ist“ schaltet sie das Thermostat einmal aus und wieder ein, sobald ein Plan aktiv wird. Ein Thermostat, das du selbst ausgeschaltet hast, schaltet sie nicht ein.
+- Ist kein Plan aktiv, schaltet die Integration nichts. Mit der Option „Thermostat ausschalten, wenn kein Plan aktiv ist“ schaltet sie das Thermostat einmal aus und wieder ein, sobald ein Plan aktiv wird. Mit dieser Option gehört Ein/Aus der Integration: steht das Thermostat bei einem Wechselpunkt auf „Aus“, schaltet sie es ein. Ohne die Option fasst sie Ein/Aus nicht an, ein ausgeschaltetes Thermostat bleibt aus.
+- Haben Heizperiode oder Heizmodus keinen Zustand (z. B. kurz nach dem Start von Home Assistant), schaltet die Integration nichts.
 - Feiertag gilt Mo–Fr. Ohne eigenen Feiertagsplan gilt der Sonntag.
 
 ## Stand
 
-Version 0.2.2. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
+Version 0.2.3. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
