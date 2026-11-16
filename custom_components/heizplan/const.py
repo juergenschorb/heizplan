@@ -1,6 +1,8 @@
 """Konstanten für Heizplan."""
 
 DOMAIN = "heizplan"
+# Trennt im Titel eines Raums die Etage vom Raumnamen ("DG · Bad")
+TITLE_SEP = " · "
 
 CONF_CLIMATE = "climate"
 CONF_SEASON = "season_entity"

@@ -447,3 +447,35 @@ async def test_presence(hass: HomeAssistant, freezer: FrozenDateTimeFactory, cal
     await hass.async_block_till_done()
     assert r.active_plan() == "urlaub"
     assert calls["preset"][-1].data["preset_mode"] == "frost"
+
+
+async def test_floor_in_title(hass: HomeAssistant, freezer, calls):
+    """Die Etage steht vorn im Titel, der Raumname bleibt ohne Etage."""
+    from homeassistant.helpers import area_registry as ar, entity_registry as er, floor_registry as fr
+
+    floor = fr.async_get(hass).async_create("DG")
+    area = ar.async_get(hass).async_create("DG Bad", floor_id=floor.floor_id)
+    ent = er.async_get(hass).async_get_or_create("climate", "test", "bad", suggested_object_id="bad_dg")
+    CL = ent.entity_id
+    hass.states.async_set(CL, "heat", {"preset_modes": ["comfort", "eco", "frost"]})
+    entry = await setup_room(hass, climate=CL)
+    assert entry.title == "Wohnzimmer"
+
+    er.async_get(hass).async_update_entity(CL, area_id=area.id)
+    await hass.async_block_till_done()
+    assert entry.title == "DG · Wohnzimmer"
+    room = hass.data[DOMAIN][entry.entry_id]
+    assert room.name == "Wohnzimmer"
+    assert room.as_dict()["name"] == "Wohnzimmer"
+
+    # Umbenennen in Home Assistant: Etage wird wieder ergänzt, nicht verdoppelt
+    hass.config_entries.async_update_entry(entry, title="Stube")
+    await hass.async_block_till_done()
+    assert entry.title == "DG · Stube"
+    hass.config_entries.async_update_entry(entry, title="DG · Stube 2")
+    await hass.async_block_till_done()
+    assert entry.title == "DG · Stube 2"
+
+    er.async_get(hass).async_update_entity(CL, area_id=None)
+    await hass.async_block_till_done()
+    assert entry.title == "Stube 2"

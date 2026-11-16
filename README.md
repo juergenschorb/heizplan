@@ -45,6 +45,10 @@ Die Integration ersetzt die Scheduler-Komponente für die Heizplan Card: Statt v
 
 In der Karte kann als Entität weiter das Thermostat stehen. Wer das Thermostat später tauschen will, ohne die Karte anzufassen, wählt in der Karte stattdessen den Raum (`sensor.heizplan_<raum>`).
 
+### Etage in der Raumliste (ab 0.3.2)
+
+Liegt das Thermostat in einem Bereich, der einer Etage zugeordnet ist, stellt die Integration die Etage dem Namen voran, z. B. „DG · Bad“ und „OG · Bad“. Dadurch ist die Liste unter *Geräte & Dienste → Heizplan* nach Etage sortiert, und gleichnamige Räume lassen sich unterscheiden. In den Karten und im Namen der Entität bleibt es beim reinen Raumnamen. Beim Umbenennen genügt der Raumname, die Etage wird automatisch ergänzt und folgt, wenn sich Bereich oder Etage ändern.
+
 ## Heizmodus und Anwesenheit
 
 Der Heizmodus ist der Hauptschalter, die Anwesenheit verfeinert nur, solange geheizt wird:
