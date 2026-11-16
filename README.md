@@ -39,8 +39,25 @@ Die Integration ersetzt die Scheduler-Komponente für die Heizplan Card: Statt v
 | Option „Heizen“ / „Urlaub“ | Optionstexte der Auswahl für Normal- und Urlaubsplan |
 | Thermostat ausschalten, wenn kein Plan aktiv ist | Schaltet das Thermostat bei Heizmodus „Aus“ oder außerhalb der Heizperiode aus und danach wieder ein |
 | Feiertage | Feiertagskalender (`calendar`, an = Feiertag) oder Arbeitstag-Sensor (aus = Feiertag) |
+| Anwesenheit | Auswahl-Entität mit dem Modus der Etage, z. B. Normal / Urlaub / Abwesend |
+| Option „Abwesend“ | Optionstext für „niemand da“: es gilt der Urlaubs-/Abwesend-Plan |
+| Option „Urlaub zuhause“ | Optionstext für „frei, aber zuhause“: Mo–Fr gilt der Tag „Feiertag“ |
 
 In der Karte kann als Entität weiter das Thermostat stehen. Wer das Thermostat später tauschen will, ohne die Karte anzufassen, wählt in der Karte stattdessen den Raum (`sensor.heizplan_<raum>`).
+
+## Heizmodus und Anwesenheit
+
+Der Heizmodus ist der Hauptschalter, die Anwesenheit verfeinert nur, solange geheizt wird:
+
+| Heizmodus | Anwesenheit | Es gilt |
+|---|---|---|
+| nicht „Heizen“ und nicht „Urlaub“ (z. B. aus) | egal | kein Plan |
+| „Urlaub“ | egal | Urlaubs-/Abwesend-Plan |
+| „Heizen“ | „Abwesend“ | Urlaubs-/Abwesend-Plan |
+| „Heizen“ | „Urlaub zuhause“ | Normalplan, Mo–Fr mit dem Tag „Feiertag“ |
+| „Heizen“ | sonst | Normalplan |
+
+Alle Felder sind optional. Ohne Heizmodus und Anwesenheit gilt immer der Normalplan.
 
 ## Entität
 
@@ -64,4 +81,4 @@ Attribute: `active_plan`, `next_change`, `next_mode`, `override_until`, `climate
 
 ## Stand
 
-Version 0.2.3. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
+Version 0.3.0. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
