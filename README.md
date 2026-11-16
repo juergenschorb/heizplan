@@ -19,8 +19,10 @@ Die Integration ersetzt die Scheduler-Komponente für die Heizplan Card: Statt v
 
 ## Installation
 
-1. HACS → ⋮ → *Benutzerdefinierte Repositories* → `https://github.com/juergenschorb/heizplan`, Typ **Integration**
-2. „Heizplan“ in HACS herunterladen und Home Assistant neu starten
+Seit Home Assistant 2026.11 ist HACS als „Marketplace“ eingebaut. Ein vorhandenes HACS wird beim Update automatisch übernommen.
+
+1. *Einstellungen → Marketplace* → **Add from link** → `https://github.com/juergenschorb/heizplan`
+2. „Heizplan“ installieren. Updates erscheinen unter *Einstellungen → Updates*; nach einem Update Home Assistant neu starten
 3. Heizplan Card ab Version 0.6.0 installieren bzw. aktualisieren
 
 ## Räume anlegen
