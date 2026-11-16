@@ -261,13 +261,6 @@ class HeizplanRoom:
         state = self._state(workday)
         return state == ("on" if workday.startswith("calendar.") else "off")
 
-    def has_holiday_day(self) -> bool:
-        """Es gibt einen eigenen Tag "Feiertag" im Plan."""
-        return bool(
-            self.conf(CONF_WORKDAY)
-            or (self.conf(CONF_PRESENCE) and self.conf(CONF_PRESENCE_HOME))
-        )
-
     def day_key(self, when: datetime, now: datetime | None = None) -> str:
         now = now or dt_util.now()
         key = DAYS[when.weekday()]
@@ -276,11 +269,11 @@ class HeizplanRoom:
         return key
 
     def entries(self, plan: str, day: str) -> list[dict[str, Any]]:
+        if day == HOL:  # ein Feiertag läuft immer wie der Sonntag
+            day = "sun"
         found = self.plans.get(plan, {}).get(day)
         if found:
             return found
-        if day == HOL:  # Feiertag wie Sonntag, bis er eigens gespeichert ist
-            return self.entries(plan, "sun")
         return [{"start": 0, "mode": self.default_mode}]
 
     def slot_at(self, plan: str, when: datetime, now: datetime | None = None) -> dict[str, Any]:
@@ -435,8 +428,11 @@ class HeizplanRoom:
     # ---------- Änderungen von außen ----------
     async def async_set_week(self, plan: str, week: dict[str, list[dict[str, Any]]]) -> None:
         stored = dict(self.plans.get(plan, {}))
+        stored.pop(HOL, None)  # eigener Feiertag aus Versionen vor 0.3.1
         for day, entries in week.items():
-            if day not in DAYS and day != HOL:
+            if day == HOL:
+                continue
+            if day not in DAYS:
                 raise ValueError(f"Unbekannter Tag: {day}")
             norm = normalize_day(entries)
             if norm:
@@ -486,7 +482,7 @@ class HeizplanRoom:
             CONF_PRESENCE_AWAY: self.conf(CONF_PRESENCE_AWAY),
             CONF_PRESENCE_HOME: self.conf(CONF_PRESENCE_HOME),
             "holiday": self.is_holiday(),
-            "holiday_day": self.has_holiday_day(),
+            "holiday_day": False,  # kein eigener Feiertag-Plan: Feiertag = Sonntag
             CONF_DEFAULT_MODE: self.default_mode,
             CONF_OFF_INACTIVE: bool(self.conf(CONF_OFF_INACTIVE)),
             "plan_keys": self.plan_keys(),
