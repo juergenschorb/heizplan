@@ -37,6 +37,7 @@ from .const import (
     PLAN_NORMAL,
     PLAN_VACATION,
     STATE_MANUAL,
+    TITLE_SEP,
     STATE_OFF,
     STORAGE_VERSION,
     WORKDAYS,
@@ -107,7 +108,8 @@ class HeizplanRoom:
 
     @property
     def name(self) -> str:
-        return self.entry.title
+        """Raumname ohne die im Titel vorangestellte Etage."""
+        return self.entry.title.rsplit(TITLE_SEP, 1)[-1].strip()
 
     @property
     def climate(self) -> str:
