@@ -42,7 +42,8 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 STEP = 15
-OFF_MARKER = "__off__"
+OFF_MARKER = "__inactive__"
+OLD_OFF_MARKER = "__off__"
 
 
 def normalize_day(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -89,6 +90,8 @@ class HeizplanRoom:
         self.plans: dict[str, dict[str, list[dict[str, Any]]]] = {}
         self.override: dict[str, Any] | None = None
         self._last: list[Any] | None = None
+        # True, solange diese Integration das Thermostat ausgeschaltet hat
+        self._turned_off = False
         self.revision = 0
         self._listeners: list[CALLBACK_TYPE] = []
         self._unsubs: list[CALLBACK_TYPE] = []
@@ -123,12 +126,21 @@ class HeizplanRoom:
         self.plans = data.get("plans") or {}
         self.override = data.get("override")
         self._last = data.get("last")
+        self._turned_off = bool(data.get("turned_off"))
+        if self._last and self._last[-1] == OLD_OFF_MARKER:  # Stand aus 0.2.0–0.2.2
+            self._turned_off = True
+            self._last = None
+
+    def _data(self) -> dict[str, Any]:
+        return {
+            "plans": self.plans,
+            "override": self.override,
+            "last": self._last,
+            "turned_off": self._turned_off,
+        }
 
     def _save(self) -> None:
-        self._store.async_delay_save(
-            lambda: {"plans": self.plans, "override": self.override, "last": self._last},
-            1,
-        )
+        self._store.async_delay_save(self._data, 1)
 
     async def async_start(self) -> None:
         self._unsubs.append(async_track_time_change(self.hass, self._tick, second=0))
@@ -156,9 +168,7 @@ class HeizplanRoom:
         for unsub in self._unsubs:
             unsub()
         self._unsubs.clear()
-        await self._store.async_save(
-            {"plans": self.plans, "override": self.override, "last": self._last}
-        )
+        await self._store.async_save(self._data())
 
     async def async_remove(self) -> None:
         await self._store.async_remove()
@@ -198,6 +208,17 @@ class HeizplanRoom:
             return None
         state = self.hass.states.get(entity_id)
         return state.state if state else None
+
+    def conditions_ready(self) -> bool:
+        """Heizperiode und Heizmodus haben einen Zustand (nicht kurz nach dem Start)."""
+        for entity_id in (self.conf(CONF_SEASON), self.conf(CONF_MODE_ENTITY)):
+            if entity_id and self._state(entity_id) in (
+                None,
+                STATE_UNAVAILABLE,
+                STATE_UNKNOWN,
+            ):
+                return False
+        return True
 
     def active_plan(self) -> str | None:
         """Plan, der gerade gilt, oder None (Heizung aus / außerhalb Heizperiode)."""
@@ -300,17 +321,22 @@ class HeizplanRoom:
                 else:
                     self._notify()
                     return
+            if not self.conditions_ready():
+                # Zustand von Heizperiode/Heizmodus unbekannt: nichts schalten
+                self._notify()
+                return
             plan = self.active_plan()
             if plan is None:
                 # kein Plan aktiv: auf Wunsch das Thermostat einmal ausschalten
-                if self.conf(CONF_OFF_INACTIVE):
-                    marker = [self.climate, OFF_MARKER]
-                    if self._last != marker and await self._set_hvac("off"):
+                marker = [self.climate, OFF_MARKER]
+                if self._last != marker:
+                    if not self.conf(CONF_OFF_INACTIVE):
                         self._last = marker
                         self._save()
-                elif self._last is not None:
-                    self._last = None
-                    self._save()
+                    elif await self._set_hvac("off"):
+                        self._last = marker
+                        self._turned_off = True
+                        self._save()
                 self._notify()
                 return
             slot = self.slot_at(plan, now)
@@ -323,10 +349,15 @@ class HeizplanRoom:
                 slot["mode"],
             ]
             if force or ident != self._last:
-                was_off = bool(self._last) and self._last[-1] == OFF_MARKER
-                if was_off and self.conf(CONF_OFF_INACTIVE) and not await self._heat_on():
-                    self._notify()
-                    return
+                # wieder einschalten, wenn diese Integration ausgeschaltet hat; mit der
+                # Option "ausschalten, wenn kein Plan aktiv" bei jedem Wechsel
+                if self._turned_off or self.conf(CONF_OFF_INACTIVE):
+                    if not await self._heat_on():
+                        self._notify()
+                        return
+                    if self._turned_off:
+                        self._turned_off = False
+                        self._save()
                 if not apply or await self._apply(slot["mode"]):
                     self._last = ident
                     self._save()

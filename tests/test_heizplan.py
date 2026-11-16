@@ -346,3 +346,59 @@ async def test_inactive_without_option_leaves_thermostat(hass: HomeAssistant, fr
     hass.states.async_set("input_boolean.heizperiode", "off")
     await setup_room(hass, season_entity="input_boolean.heizperiode")
     assert hvac == [] and calls["preset"] == []
+
+
+async def test_unknown_conditions_do_nothing(hass: HomeAssistant, freezer, calls):
+    """Kurz nach dem Start fehlt der Zustand der Heizperiode: nicht ausschalten."""
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    freezer.move_to(local(2026, 11, 16, 8, 0))
+    hvac = async_mock_service(hass, "climate", "set_hvac_mode")
+    hass.states.async_set(CLIMATE, "heat", {**PRESETS, "hvac_modes": ["off", "heat"]})
+    await setup_room(hass, season_entity="input_boolean.heizperiode", off_when_inactive=True)
+    assert hvac == [] and calls["preset"] == []
+    hass.states.async_set("input_boolean.heizperiode", "unavailable")
+    await hass.async_block_till_done()
+    assert hvac == [] and calls["preset"] == []
+    hass.states.async_set("input_boolean.heizperiode", "on")
+    await hass.async_block_till_done()
+    assert hvac == [] and len(calls["preset"]) == 1
+
+
+async def test_turned_off_is_restored_after_option_removed(hass: HomeAssistant, freezer, calls):
+    """Hat die Integration ausgeschaltet, schaltet sie wieder ein, auch ohne die Option."""
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    freezer.move_to(local(2026, 11, 16, 8, 0))
+    hvac = async_mock_service(hass, "climate", "set_hvac_mode")
+    attrs = {**PRESETS, "hvac_modes": ["off", "heat"]}
+    hass.states.async_set(CLIMATE, "heat", attrs)
+    hass.states.async_set("input_boolean.heizperiode", "off")
+    entry = await setup_room(hass, season_entity="input_boolean.heizperiode", off_when_inactive=True)
+    assert hvac[-1].data["hvac_mode"] == "off"
+    hass.states.async_set(CLIMATE, "off", attrs)
+    hass.config_entries.async_update_entry(
+        entry, data={"climate": CLIMATE, "season_entity": "input_boolean.heizperiode"}
+    )
+    await hass.async_block_till_done()
+    hass.states.async_set("input_boolean.heizperiode", "on")
+    await hass.async_block_till_done()
+    assert hvac[-1].data["hvac_mode"] == "heat"
+    assert calls["preset"][-1].data["preset_mode"] == "eco"
+
+
+async def test_option_turns_on_at_change(hass: HomeAssistant, freezer: FrozenDateTimeFactory, calls):
+    """Mit der Option gehört Ein/Aus der Integration: beim Wechsel wieder einschalten."""
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    freezer.move_to(local(2026, 11, 16, 5, 0))
+    hvac = async_mock_service(hass, "climate", "set_hvac_mode")
+    hass.states.async_set(CLIMATE, "off", {**PRESETS, "hvac_modes": ["off", "heat"]})
+    await setup_room(hass, off_when_inactive=True)
+    assert hvac[-1].data == {"entity_id": CLIMATE, "hvac_mode": "heat"}
+
+
+async def test_without_option_manual_off_stays(hass: HomeAssistant, freezer, calls):
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    freezer.move_to(local(2026, 11, 16, 5, 0))
+    hvac = async_mock_service(hass, "climate", "set_hvac_mode")
+    hass.states.async_set(CLIMATE, "off", {**PRESETS, "hvac_modes": ["off", "heat"]})
+    await setup_room(hass)
+    assert hvac == [] and len(calls["preset"]) == 1
