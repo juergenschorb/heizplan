@@ -1,0 +1,13 @@
+{
+  "domain": "heizplan",
+  "name": "Heizplan",
+  "codeowners": ["@juergenschorb"],
+  "config_flow": true,
+  "dependencies": ["websocket_api"],
+  "documentation": "https://github.com/juergenschorb/heizplan",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/juergenschorb/heizplan/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

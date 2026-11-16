@@ -1,0 +1,83 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Raum anlegen",
+        "description": "Ein Eintrag je Raum. Die Zeiten stellst du danach in der Heizplan Card ein.",
+        "data": {
+          "name": "Raum",
+          "climate": "Raumthermostat",
+          "default_mode": "Grundmodus für neue Pläne",
+          "season_entity": "Heizperiode (optional)",
+          "mode_entity": "Heizmodus (optional)",
+          "mode_heat": "Option „Heizen“",
+          "mode_vacation": "Option „Urlaub“",
+          "workday_entity": "Feiertage (optional)"
+        },
+        "data_description": {
+          "climate": "Dieses Thermostat schaltet der Plan (Komfort / Eco / Frostschutz als Preset).",
+          "season_entity": "Der Plan läuft nur, wenn dieser Schalter an ist.",
+          "mode_entity": "Zentrale Auswahl, z. B. Aus / Heizen / Urlaub.",
+          "mode_heat": "Optionstext für den Normal-Plan, genau wie in der Auswahl.",
+          "mode_vacation": "Optionstext für den Urlaubsplan (leer = kein Urlaubsplan).",
+          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). Dann gibt es einen eigenen Tag „Feiertag“."
+        }
+      }
+    },
+    "error": {
+      "climate_in_use": "Für dieses Thermostat gibt es schon einen Raum."
+    },
+    "abort": {
+      "climate_in_use": "Für dieses Thermostat gibt es schon einen Raum."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Raum ändern",
+        "data": {
+          "climate": "Raumthermostat",
+          "default_mode": "Grundmodus für neue Pläne",
+          "season_entity": "Heizperiode (optional)",
+          "mode_entity": "Heizmodus (optional)",
+          "mode_heat": "Option „Heizen“",
+          "mode_vacation": "Option „Urlaub“",
+          "workday_entity": "Feiertage (optional)"
+        },
+        "data_description": {
+          "climate": "Dieses Thermostat schaltet der Plan (Komfort / Eco / Frostschutz als Preset).",
+          "season_entity": "Der Plan läuft nur, wenn dieser Schalter an ist.",
+          "mode_entity": "Zentrale Auswahl, z. B. Aus / Heizen / Urlaub.",
+          "mode_heat": "Optionstext für den Normal-Plan, genau wie in der Auswahl.",
+          "mode_vacation": "Optionstext für den Urlaubsplan (leer = kein Urlaubsplan).",
+          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). Dann gibt es einen eigenen Tag „Feiertag“."
+        }
+      }
+    },
+    "error": {
+      "climate_in_use": "Für dieses Thermostat gibt es schon einen Raum."
+    }
+  },
+  "selector": {
+    "mode": {
+      "options": {
+        "comfort": "Komfort",
+        "eco": "Eco",
+        "frost": "Frostschutz"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "plan": {
+        "state": {
+          "comfort": "Komfort",
+          "eco": "Eco",
+          "frost": "Frostschutz",
+          "off": "Kein Plan aktiv",
+          "manual": "Manuell"
+        }
+      }
+    }
+  }
+}

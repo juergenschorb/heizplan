@@ -1,0 +1,37 @@
+"""Konstanten für Heizplan."""
+
+DOMAIN = "heizplan"
+
+CONF_CLIMATE = "climate"
+CONF_SEASON = "season_entity"
+CONF_MODE_ENTITY = "mode_entity"
+CONF_MODE_HEAT = "mode_heat"
+CONF_MODE_VACATION = "mode_vacation"
+CONF_WORKDAY = "workday_entity"
+CONF_DEFAULT_MODE = "default_mode"
+
+OPTION_KEYS = (
+    CONF_CLIMATE,
+    CONF_SEASON,
+    CONF_MODE_ENTITY,
+    CONF_MODE_HEAT,
+    CONF_MODE_VACATION,
+    CONF_WORKDAY,
+    CONF_DEFAULT_MODE,
+)
+
+MODES = ("comfort", "eco", "frost")
+DEFAULT_MODE = "eco"
+
+PLAN_NORMAL = "normal"
+PLAN_VACATION = "urlaub"
+
+DAYS = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
+WORKDAYS = DAYS[:5]
+HOL = "hol"
+DAY_MIN = 1440
+
+STATE_OFF = "off"
+STATE_MANUAL = "manual"
+
+STORAGE_VERSION = 1

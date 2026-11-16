@@ -1,0 +1,83 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add room",
+        "description": "One entry per room. Set the times in the Heizplan Card afterwards.",
+        "data": {
+          "name": "Room",
+          "climate": "Room thermostat",
+          "default_mode": "Default mode for new plans",
+          "season_entity": "Heating season (optional)",
+          "mode_entity": "Heating mode (optional)",
+          "mode_heat": "Option \"heating\"",
+          "mode_vacation": "Option \"vacation\"",
+          "workday_entity": "Holidays (optional)"
+        },
+        "data_description": {
+          "climate": "The plan switches this thermostat (comfort / eco / frost as preset).",
+          "season_entity": "The plan only runs while this switch is on.",
+          "mode_entity": "Central selection, e.g. off / heating / vacation.",
+          "mode_heat": "Option text for the normal plan, exactly as in the selection.",
+          "mode_vacation": "Option text for the vacation plan (empty = no vacation plan).",
+          "workday_entity": "Holiday calendar or workday sensor. Adds a separate day \"holiday\"."
+        }
+      }
+    },
+    "error": {
+      "climate_in_use": "There is already a room for this thermostat."
+    },
+    "abort": {
+      "climate_in_use": "There is already a room for this thermostat."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Change room",
+        "data": {
+          "climate": "Room thermostat",
+          "default_mode": "Default mode for new plans",
+          "season_entity": "Heating season (optional)",
+          "mode_entity": "Heating mode (optional)",
+          "mode_heat": "Option \"heating\"",
+          "mode_vacation": "Option \"vacation\"",
+          "workday_entity": "Holidays (optional)"
+        },
+        "data_description": {
+          "climate": "The plan switches this thermostat (comfort / eco / frost as preset).",
+          "season_entity": "The plan only runs while this switch is on.",
+          "mode_entity": "Central selection, e.g. off / heating / vacation.",
+          "mode_heat": "Option text for the normal plan, exactly as in the selection.",
+          "mode_vacation": "Option text for the vacation plan (empty = no vacation plan).",
+          "workday_entity": "Holiday calendar or workday sensor. Adds a separate day \"holiday\"."
+        }
+      }
+    },
+    "error": {
+      "climate_in_use": "There is already a room for this thermostat."
+    }
+  },
+  "selector": {
+    "mode": {
+      "options": {
+        "comfort": "Comfort",
+        "eco": "Eco",
+        "frost": "Frost protection"
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "plan": {
+        "state": {
+          "comfort": "Comfort",
+          "eco": "Eco",
+          "frost": "Frost protection",
+          "off": "No plan active",
+          "manual": "Manual"
+        }
+      }
+    }
+  }
+}
