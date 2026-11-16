@@ -12,7 +12,8 @@
           "mode_entity": "Heizmodus (optional)",
           "mode_heat": "Option „Heizen“",
           "mode_vacation": "Option „Urlaub“",
-          "workday_entity": "Feiertage (optional)"
+          "workday_entity": "Feiertage (optional)",
+          "off_when_inactive": "Thermostat ausschalten, wenn kein Plan aktiv ist"
         },
         "data_description": {
           "climate": "Dieses Thermostat schaltet der Plan (Komfort / Eco / Frostschutz als Preset).",
@@ -20,7 +21,8 @@
           "mode_entity": "Zentrale Auswahl, z. B. Aus / Heizen / Urlaub.",
           "mode_heat": "Optionstext für den Normal-Plan, genau wie in der Auswahl.",
           "mode_vacation": "Optionstext für den Urlaubsplan (leer = kein Urlaubsplan).",
-          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). Dann gibt es einen eigenen Tag „Feiertag“."
+          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). Dann gibt es einen eigenen Tag „Feiertag“.",
+          "off_when_inactive": "Bei Heizmodus „Aus“ oder außerhalb der Heizperiode wird das Thermostat ausgeschaltet und danach wieder eingeschaltet."
         }
       }
     },
@@ -42,7 +44,8 @@
           "mode_entity": "Heizmodus (optional)",
           "mode_heat": "Option „Heizen“",
           "mode_vacation": "Option „Urlaub“",
-          "workday_entity": "Feiertage (optional)"
+          "workday_entity": "Feiertage (optional)",
+          "off_when_inactive": "Thermostat ausschalten, wenn kein Plan aktiv ist"
         },
         "data_description": {
           "climate": "Dieses Thermostat schaltet der Plan (Komfort / Eco / Frostschutz als Preset).",
@@ -50,7 +53,8 @@
           "mode_entity": "Zentrale Auswahl, z. B. Aus / Heizen / Urlaub.",
           "mode_heat": "Optionstext für den Normal-Plan, genau wie in der Auswahl.",
           "mode_vacation": "Optionstext für den Urlaubsplan (leer = kein Urlaubsplan).",
-          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). Dann gibt es einen eigenen Tag „Feiertag“."
+          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). Dann gibt es einen eigenen Tag „Feiertag“.",
+          "off_when_inactive": "Bei Heizmodus „Aus“ oder außerhalb der Heizperiode wird das Thermostat ausgeschaltet und danach wieder eingeschaltet."
         }
       }
     },

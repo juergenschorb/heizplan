@@ -313,3 +313,36 @@ async def test_remove_entry_deletes_storage(hass: HomeAssistant, hass_storage, f
     assert await hass.config_entries.async_remove(entry.entry_id)
     await hass.async_block_till_done()
     assert f"heizplan.{entry.entry_id}" not in hass_storage
+
+
+async def test_off_when_inactive(hass: HomeAssistant, freezer: FrozenDateTimeFactory, calls):
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    freezer.move_to(local(2026, 11, 16, 8, 0))
+    hvac = async_mock_service(hass, "climate", "set_hvac_mode")
+    attrs = {**PRESETS, "hvac_modes": ["off", "heat"]}
+    hass.states.async_set(CLIMATE, "heat", attrs)
+    hass.states.async_set("input_boolean.heizperiode", "on")
+    entry = await setup_room(hass, season_entity="input_boolean.heizperiode", off_when_inactive=True)
+    assert hvac == [] and len(calls["preset"]) == 1
+
+    hass.states.async_set("input_boolean.heizperiode", "off")
+    await hass.async_block_till_done()
+    assert hvac[-1].data == {"entity_id": CLIMATE, "hvac_mode": "off"}
+    hass.states.async_set(CLIMATE, "off", attrs)
+    # nur einmal ausschalten, auch über Minuten und einen Neustart hinweg
+    await go(hass, freezer, local(2026, 11, 16, 8, 5))
+    assert await hass.config_entries.async_reload(entry.entry_id)
+    await hass.async_block_till_done()
+    assert len(hvac) == 1
+
+    hass.states.async_set("input_boolean.heizperiode", "on")
+    await hass.async_block_till_done()
+    assert hvac[-1].data == {"entity_id": CLIMATE, "hvac_mode": "heat"}
+    assert len(calls["preset"]) == 2 and calls["preset"][-1].data["preset_mode"] == "eco"
+
+
+async def test_inactive_without_option_leaves_thermostat(hass: HomeAssistant, freezer, calls):
+    hvac = async_mock_service(hass, "climate", "set_hvac_mode")
+    hass.states.async_set("input_boolean.heizperiode", "off")
+    await setup_room(hass, season_entity="input_boolean.heizperiode")
+    assert hvac == [] and calls["preset"] == []

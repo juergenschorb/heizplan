@@ -23,6 +23,7 @@ from .const import (
     CONF_MODE_ENTITY,
     CONF_MODE_HEAT,
     CONF_MODE_VACATION,
+    CONF_OFF_INACTIVE,
     CONF_SEASON,
     CONF_WORKDAY,
     DAY_MIN,
@@ -41,6 +42,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 STEP = 15
+OFF_MARKER = "__off__"
 
 
 def normalize_day(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -300,7 +302,13 @@ class HeizplanRoom:
                     return
             plan = self.active_plan()
             if plan is None:
-                if self._last is not None:
+                # kein Plan aktiv: auf Wunsch das Thermostat einmal ausschalten
+                if self.conf(CONF_OFF_INACTIVE):
+                    marker = [self.climate, OFF_MARKER]
+                    if self._last != marker and await self._set_hvac("off"):
+                        self._last = marker
+                        self._save()
+                elif self._last is not None:
                     self._last = None
                     self._save()
                 self._notify()
@@ -315,10 +323,43 @@ class HeizplanRoom:
                 slot["mode"],
             ]
             if force or ident != self._last:
+                was_off = bool(self._last) and self._last[-1] == OFF_MARKER
+                if was_off and self.conf(CONF_OFF_INACTIVE) and not await self._heat_on():
+                    self._notify()
+                    return
                 if not apply or await self._apply(slot["mode"]):
                     self._last = ident
                     self._save()
             self._notify()
+
+    async def _set_hvac(self, hvac_mode: str) -> bool:
+        state = self.hass.states.get(self.climate)
+        if state is None or state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
+            return False
+        if state.state == hvac_mode:
+            return True
+        try:
+            await self.hass.services.async_call(
+                "climate",
+                "set_hvac_mode",
+                {"entity_id": self.climate, "hvac_mode": hvac_mode},
+                blocking=True,
+            )
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.warning("%s: Betriebsart %s nicht gesetzt: %s", self.name, hvac_mode, err)
+            return False
+        return True
+
+    async def _heat_on(self) -> bool:
+        """Thermostat wieder einschalten, das diese Integration ausgeschaltet hat."""
+        state = self.hass.states.get(self.climate)
+        if state is None or state.state in (STATE_UNAVAILABLE, STATE_UNKNOWN):
+            return False
+        if state.state != "off":
+            return True
+        modes = state.attributes.get("hvac_modes") or []
+        target = next((m for m in ("heat", "auto", "heat_cool") if m in modes), "heat")
+        return await self._set_hvac(target)
 
     async def _apply(self, mode: str) -> bool:
         state = self.hass.states.get(self.climate)
@@ -387,6 +428,7 @@ class HeizplanRoom:
             CONF_MODE_VACATION: self.conf(CONF_MODE_VACATION),
             CONF_WORKDAY: self.conf(CONF_WORKDAY),
             CONF_DEFAULT_MODE: self.default_mode,
+            CONF_OFF_INACTIVE: bool(self.conf(CONF_OFF_INACTIVE)),
             "plan_keys": self.plan_keys(),
             "plans": self.plans,
             "override": self.override,
