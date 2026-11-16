@@ -24,11 +24,11 @@
           "mode_entity": "Zentrale Auswahl, z. B. Aus / Heizen / Urlaub.",
           "mode_heat": "Optionstext für den Normal-Plan, genau wie in der Auswahl.",
           "mode_vacation": "Optionstext für den Urlaubsplan (leer = kein Urlaubsplan).",
-          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). Dann gibt es einen eigenen Tag „Feiertag“.",
+          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). An Feiertagen (Mo–Fr) gilt der Plan vom Sonntag.",
           "off_when_inactive": "Bei Heizmodus „Aus“ oder außerhalb der Heizperiode wird das Thermostat ausgeschaltet und danach wieder eingeschaltet.",
           "presence_entity": "Auswahl mit dem Modus der Etage, z. B. Normal / Urlaub / Abwesend. Wirkt nur, solange die Heizung laut Heizmodus läuft.",
           "presence_away": "Optionstext für „niemand da“. Dann gilt der Urlaubs-/Abwesend-Plan.",
-          "presence_home": "Optionstext für „frei, aber zuhause“. Dann gilt Mo–Fr der Tag „Feiertag“. Leer lassen, wenn nicht gewünscht."
+          "presence_home": "Optionstext für „frei, aber zuhause“. Dann gilt Mo–Fr der Plan vom Sonntag. Leer lassen, wenn nicht gewünscht."
         }
       }
     },
@@ -62,11 +62,11 @@
           "mode_entity": "Zentrale Auswahl, z. B. Aus / Heizen / Urlaub.",
           "mode_heat": "Optionstext für den Normal-Plan, genau wie in der Auswahl.",
           "mode_vacation": "Optionstext für den Urlaubsplan (leer = kein Urlaubsplan).",
-          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). Dann gibt es einen eigenen Tag „Feiertag“.",
+          "workday_entity": "Feiertagskalender oder Arbeitstag-Sensor (Workday). An Feiertagen (Mo–Fr) gilt der Plan vom Sonntag.",
           "off_when_inactive": "Bei Heizmodus „Aus“ oder außerhalb der Heizperiode wird das Thermostat ausgeschaltet und danach wieder eingeschaltet.",
           "presence_entity": "Auswahl mit dem Modus der Etage, z. B. Normal / Urlaub / Abwesend. Wirkt nur, solange die Heizung laut Heizmodus läuft.",
           "presence_away": "Optionstext für „niemand da“. Dann gilt der Urlaubs-/Abwesend-Plan.",
-          "presence_home": "Optionstext für „frei, aber zuhause“. Dann gilt Mo–Fr der Tag „Feiertag“. Leer lassen, wenn nicht gewünscht."
+          "presence_home": "Optionstext für „frei, aber zuhause“. Dann gilt Mo–Fr der Plan vom Sonntag. Leer lassen, wenn nicht gewünscht."
         }
       }
     },

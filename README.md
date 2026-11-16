@@ -8,7 +8,7 @@ Die Integration ersetzt die Scheduler-Komponente für die Heizplan Card: Statt v
 
 ## Funktionen
 
-- Ein Eintrag je Raum mit Thermostat, Wochenplan Mo–So und optional einem eigenen Tag „Feiertag“
+- Ein Eintrag je Raum mit Thermostat, Wochenplan Mo–So; an Feiertagen (Mo–Fr) gilt der Sonntag
 - Optional zweiter Plan „Urlaub“, umgeschaltet über eine Auswahl (z. B. Aus / Heizen / Urlaub)
 - Optional Heizperiode: der Plan läuft nur, wenn ein Schalter an ist
 - Manuelle Temperatur bis zu einer Uhrzeit, danach übernimmt wieder der Plan
@@ -41,7 +41,7 @@ Die Integration ersetzt die Scheduler-Komponente für die Heizplan Card: Statt v
 | Feiertage | Feiertagskalender (`calendar`, an = Feiertag) oder Arbeitstag-Sensor (aus = Feiertag) |
 | Anwesenheit | Auswahl-Entität mit dem Modus der Etage, z. B. Normal / Urlaub / Abwesend |
 | Option „Abwesend“ | Optionstext für „niemand da“: es gilt der Urlaubs-/Abwesend-Plan |
-| Option „Urlaub zuhause“ | Optionstext für „frei, aber zuhause“: Mo–Fr gilt der Tag „Feiertag“ |
+| Option „Urlaub zuhause“ | Optionstext für „frei, aber zuhause“: Mo–Fr gilt der Plan vom Sonntag |
 
 In der Karte kann als Entität weiter das Thermostat stehen. Wer das Thermostat später tauschen will, ohne die Karte anzufassen, wählt in der Karte stattdessen den Raum (`sensor.heizplan_<raum>`).
 
@@ -54,7 +54,7 @@ Der Heizmodus ist der Hauptschalter, die Anwesenheit verfeinert nur, solange geh
 | nicht „Heizen“ und nicht „Urlaub“ (z. B. aus) | egal | kein Plan |
 | „Urlaub“ | egal | Urlaubs-/Abwesend-Plan |
 | „Heizen“ | „Abwesend“ | Urlaubs-/Abwesend-Plan |
-| „Heizen“ | „Urlaub zuhause“ | Normalplan, Mo–Fr mit dem Tag „Feiertag“ |
+| „Heizen“ | „Urlaub zuhause“ | Normalplan, Mo–Fr wie Sonntag |
 | „Heizen“ | sonst | Normalplan |
 
 Alle Felder sind optional. Ohne Heizmodus und Anwesenheit gilt immer der Normalplan.
@@ -77,8 +77,8 @@ Attribute: `active_plan`, `next_change`, `next_mode`, `override_until`, `climate
 - Kennt das Thermostat kein Preset `frost`, aber `away`, wird für Frostschutz `away` gesetzt (Better Thermostat).
 - Ist kein Plan aktiv, schaltet die Integration nichts. Mit der Option „Thermostat ausschalten, wenn kein Plan aktiv ist“ schaltet sie das Thermostat einmal aus und wieder ein, sobald ein Plan aktiv wird. Mit dieser Option gehört Ein/Aus der Integration: steht das Thermostat bei einem Wechselpunkt auf „Aus“, schaltet sie es ein. Ohne die Option fasst sie Ein/Aus nicht an, ein ausgeschaltetes Thermostat bleibt aus.
 - Haben Heizperiode oder Heizmodus keinen Zustand (z. B. kurz nach dem Start von Home Assistant), schaltet die Integration nichts.
-- Feiertag gilt Mo–Fr. Ohne eigenen Feiertagsplan gilt der Sonntag.
+- An Feiertagen (Mo–Fr) gilt der Plan vom Sonntag. Einen eigenen Feiertagsplan gibt es nicht.
 
 ## Stand
 
-Version 0.3.0. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
+Version 0.3.1. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.

@@ -24,11 +24,11 @@
           "mode_entity": "Central selection, e.g. off / heating / vacation.",
           "mode_heat": "Option text for the normal plan, exactly as in the selection.",
           "mode_vacation": "Option text for the vacation plan (empty = no vacation plan).",
-          "workday_entity": "Holiday calendar or workday sensor. Adds a separate day \"holiday\".",
+          "workday_entity": "Holiday calendar or workday sensor. On holidays (Mon–Fri) the Sunday plan applies.",
           "off_when_inactive": "The thermostat is turned off outside the heating season or while heating mode is off, and turned on again afterwards.",
           "presence_entity": "Selection with the mode of the floor, e.g. normal / vacation / away. Only has an effect while heating is on.",
           "presence_away": "Option text for \"nobody home\". The vacation/away plan then applies.",
-          "presence_home": "Option text for \"off work but at home\". Mon–Fri then use the day \"holiday\". Leave empty if not wanted."
+          "presence_home": "Option text for \"off work but at home\". Mon–Fri then use the Sunday plan. Leave empty if not wanted."
         }
       }
     },
@@ -62,11 +62,11 @@
           "mode_entity": "Central selection, e.g. off / heating / vacation.",
           "mode_heat": "Option text for the normal plan, exactly as in the selection.",
           "mode_vacation": "Option text for the vacation plan (empty = no vacation plan).",
-          "workday_entity": "Holiday calendar or workday sensor. Adds a separate day \"holiday\".",
+          "workday_entity": "Holiday calendar or workday sensor. On holidays (Mon–Fri) the Sunday plan applies.",
           "off_when_inactive": "The thermostat is turned off outside the heating season or while heating mode is off, and turned on again afterwards.",
           "presence_entity": "Selection with the mode of the floor, e.g. normal / vacation / away. Only has an effect while heating is on.",
           "presence_away": "Option text for \"nobody home\". The vacation/away plan then applies.",
-          "presence_home": "Option text for \"off work but at home\". Mon–Fri then use the day \"holiday\". Leave empty if not wanted."
+          "presence_home": "Option text for \"off work but at home\". Mon–Fri then use the Sunday plan. Leave empty if not wanted."
         }
       }
     },

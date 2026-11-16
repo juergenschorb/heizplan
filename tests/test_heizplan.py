@@ -154,12 +154,14 @@ async def test_holiday(hass: HomeAssistant, freezer: FrozenDateTimeFactory, call
     week["sun"] = [{"start": 0, "mode": "eco"}]
     await r.async_set_week("normal", week)
     assert calls["preset"][-1].data["preset_mode"] == "comfort"
-    # Feiertag ohne eigenen Plan: wie Sonntag
+    # Feiertag läuft wie Sonntag
     hass.states.async_set("calendar.feiertage", "on")
     await hass.async_block_till_done()
     assert calls["preset"][-1].data["preset_mode"] == "eco"
+    # ein eigener Feiertag (ältere Karte) wird nicht gespeichert
     await r.async_set_week("normal", {"hol": [{"start": 0, "mode": "frost"}]})
-    assert calls["preset"][-1].data["preset_mode"] == "frost"
+    assert calls["preset"][-1].data["preset_mode"] == "eco"
+    assert "hol" not in r.plans["normal"]
     assert r.plans["normal"]["mon"] == WEEK["mon"]  # andere Tage bleiben
 
 
@@ -405,7 +407,7 @@ async def test_without_option_manual_off_stays(hass: HomeAssistant, freezer, cal
 
 
 async def test_presence(hass: HomeAssistant, freezer: FrozenDateTimeFactory, calls):
-    """Etagen-Modus: Abwesend -> Urlaubsplan, Urlaub zuhause -> Mo-Fr wie Feiertag."""
+    """Etagen-Modus: Abwesend -> Urlaubsplan, Urlaub zuhause -> Mo-Fr wie Sonntag."""
     await hass.config.async_set_time_zone("Europe/Berlin")
     freezer.move_to(local(2026, 11, 16, 8, 0))  # Montag
     hass.states.async_set("input_select.heizung", "heizen")
@@ -420,8 +422,8 @@ async def test_presence(hass: HomeAssistant, freezer: FrozenDateTimeFactory, cal
         presence_home="Urlaub",
     )
     r = room(hass, entry)
-    assert r.plan_keys() == ["normal", "urlaub"] and r.has_holiday_day()
-    await r.async_set_week("normal", {**WEEK, "hol": [{"start": 0, "mode": "comfort"}, {"start": 1380, "mode": "eco"}]})
+    assert r.plan_keys() == ["normal", "urlaub"]
+    await r.async_set_week("normal", {**WEEK, "sun": [{"start": 0, "mode": "comfort"}, {"start": 1380, "mode": "eco"}]})
     await r.async_set_week("urlaub", {d: [{"start": 0, "mode": "frost"}] for d in WEEK})
     assert calls["preset"][-1].data["preset_mode"] == "comfort"
 
@@ -435,7 +437,7 @@ async def test_presence(hass: HomeAssistant, freezer: FrozenDateTimeFactory, cal
     assert r.active_plan() == "normal" and r.day_key(dt_util.now()) == "hol"
     assert calls["preset"][-1].data["preset_mode"] == "comfort"
     await go(hass, freezer, local(2026, 11, 16, 22, 30))
-    assert calls["preset"][-1].data["preset_mode"] == "comfort"  # Feiertag: Eco erst 23:00
+    assert calls["preset"][-1].data["preset_mode"] == "comfort"  # wie Sonntag: Eco erst 23:00
     # Heizung aus gewinnt
     hass.states.async_set("input_select.heizung", "aus")
     await hass.async_block_till_done()
