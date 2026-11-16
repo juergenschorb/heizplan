@@ -402,3 +402,46 @@ async def test_without_option_manual_off_stays(hass: HomeAssistant, freezer, cal
     hass.states.async_set(CLIMATE, "off", {**PRESETS, "hvac_modes": ["off", "heat"]})
     await setup_room(hass)
     assert hvac == [] and len(calls["preset"]) == 1
+
+
+async def test_presence(hass: HomeAssistant, freezer: FrozenDateTimeFactory, calls):
+    """Etagen-Modus: Abwesend -> Urlaubsplan, Urlaub zuhause -> Mo-Fr wie Feiertag."""
+    await hass.config.async_set_time_zone("Europe/Berlin")
+    freezer.move_to(local(2026, 11, 16, 8, 0))  # Montag
+    hass.states.async_set("input_select.heizung", "heizen")
+    hass.states.async_set("input_select.og_modus", "Normal")
+    entry = await setup_room(
+        hass,
+        mode_entity="input_select.heizung",
+        mode_heat="heizen",
+        mode_vacation="Urlaub",
+        presence_entity="input_select.og_modus",
+        presence_away="Abwesend",
+        presence_home="Urlaub",
+    )
+    r = room(hass, entry)
+    assert r.plan_keys() == ["normal", "urlaub"] and r.has_holiday_day()
+    await r.async_set_week("normal", {**WEEK, "hol": [{"start": 0, "mode": "comfort"}, {"start": 1380, "mode": "eco"}]})
+    await r.async_set_week("urlaub", {d: [{"start": 0, "mode": "frost"}] for d in WEEK})
+    assert calls["preset"][-1].data["preset_mode"] == "comfort"
+
+    hass.states.async_set("input_select.og_modus", "Abwesend")
+    await hass.async_block_till_done()
+    assert calls["preset"][-1].data["preset_mode"] == "frost"
+    assert r.active_plan() == "urlaub"
+    # Urlaub zuhause: Normalplan, aber Tag "Feiertag"
+    hass.states.async_set("input_select.og_modus", "Urlaub")
+    await hass.async_block_till_done()
+    assert r.active_plan() == "normal" and r.day_key(dt_util.now()) == "hol"
+    assert calls["preset"][-1].data["preset_mode"] == "comfort"
+    await go(hass, freezer, local(2026, 11, 16, 22, 30))
+    assert calls["preset"][-1].data["preset_mode"] == "comfort"  # Feiertag: Eco erst 23:00
+    # Heizung aus gewinnt
+    hass.states.async_set("input_select.heizung", "aus")
+    await hass.async_block_till_done()
+    assert r.active_plan() is None
+    # Heizung-Modus Urlaub = Abwesend
+    hass.states.async_set("input_select.heizung", "Urlaub")
+    await hass.async_block_till_done()
+    assert r.active_plan() == "urlaub"
+    assert calls["preset"][-1].data["preset_mode"] == "frost"

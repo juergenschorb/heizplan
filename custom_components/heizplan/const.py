@@ -8,6 +8,9 @@ CONF_MODE_ENTITY = "mode_entity"
 CONF_MODE_HEAT = "mode_heat"
 CONF_MODE_VACATION = "mode_vacation"
 CONF_WORKDAY = "workday_entity"
+CONF_PRESENCE = "presence_entity"
+CONF_PRESENCE_AWAY = "presence_away"
+CONF_PRESENCE_HOME = "presence_home"
 CONF_DEFAULT_MODE = "default_mode"
 CONF_OFF_INACTIVE = "off_when_inactive"
 
@@ -18,6 +21,9 @@ OPTION_KEYS = (
     CONF_MODE_HEAT,
     CONF_MODE_VACATION,
     CONF_WORKDAY,
+    CONF_PRESENCE,
+    CONF_PRESENCE_AWAY,
+    CONF_PRESENCE_HOME,
     CONF_DEFAULT_MODE,
     CONF_OFF_INACTIVE,
 )

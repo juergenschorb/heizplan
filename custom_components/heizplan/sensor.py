@@ -57,6 +57,7 @@ class HeizplanSensor(SensorEntity):
             "entry_id": data["entry_id"],
             CONF_CLIMATE: data[CONF_CLIMATE],
             "active_plan": data["active_plan"],
+            "holiday": data["holiday"],
             "next_change": data["next_change"],
             "next_mode": data["next_mode"],
             "override_until": (data["override"] or {}).get("until"),

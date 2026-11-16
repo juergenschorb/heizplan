@@ -22,6 +22,9 @@ from .const import (
     CONF_MODE_HEAT,
     CONF_MODE_VACATION,
     CONF_OFF_INACTIVE,
+    CONF_PRESENCE,
+    CONF_PRESENCE_AWAY,
+    CONF_PRESENCE_HOME,
     CONF_SEASON,
     CONF_WORKDAY,
     DEFAULT_MODE,
@@ -65,6 +68,11 @@ def _schema(with_name: bool) -> vol.Schema:
                     domain=["calendar", "binary_sensor", "input_boolean"]
                 )
             ),
+            vol.Optional(CONF_PRESENCE): selector.EntitySelector(
+                selector.EntitySelectorConfig(domain=["input_select", "select"])
+            ),
+            vol.Optional(CONF_PRESENCE_AWAY): selector.TextSelector(),
+            vol.Optional(CONF_PRESENCE_HOME): selector.TextSelector(),
         }
     )
     return vol.Schema(fields)

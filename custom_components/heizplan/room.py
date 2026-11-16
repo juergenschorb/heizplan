@@ -24,6 +24,9 @@ from .const import (
     CONF_MODE_HEAT,
     CONF_MODE_VACATION,
     CONF_OFF_INACTIVE,
+    CONF_PRESENCE,
+    CONF_PRESENCE_AWAY,
+    CONF_PRESENCE_HOME,
     CONF_SEASON,
     CONF_WORKDAY,
     DAY_MIN,
@@ -116,7 +119,9 @@ class HeizplanRoom:
 
     def plan_keys(self) -> list[str]:
         keys = [PLAN_NORMAL]
-        if self.conf(CONF_MODE_ENTITY) and self.conf(CONF_MODE_VACATION):
+        if (self.conf(CONF_MODE_ENTITY) and self.conf(CONF_MODE_VACATION)) or (
+            self.conf(CONF_PRESENCE) and self.conf(CONF_PRESENCE_AWAY)
+        ):
             keys.append(PLAN_VACATION)
         return keys
 
@@ -150,6 +155,7 @@ class HeizplanRoom:
                 self.conf(CONF_SEASON),
                 self.conf(CONF_MODE_ENTITY),
                 self.conf(CONF_WORKDAY),
+                self.conf(CONF_PRESENCE),
             )
             if e
         ]
@@ -211,7 +217,11 @@ class HeizplanRoom:
 
     def conditions_ready(self) -> bool:
         """Heizperiode und Heizmodus haben einen Zustand (nicht kurz nach dem Start)."""
-        for entity_id in (self.conf(CONF_SEASON), self.conf(CONF_MODE_ENTITY)):
+        for entity_id in (
+            self.conf(CONF_SEASON),
+            self.conf(CONF_MODE_ENTITY),
+            self.conf(CONF_PRESENCE),
+        ):
             if entity_id and self._state(entity_id) in (
                 None,
                 STATE_UNAVAILABLE,
@@ -232,17 +242,31 @@ class HeizplanRoom:
             if vacation and current == vacation:
                 return PLAN_VACATION
             heat = self.conf(CONF_MODE_HEAT)
-            if heat:
-                return PLAN_NORMAL if current == heat else None
+            if heat and current != heat:
+                return None
+        # Heizung läuft: bei Abwesenheit gilt der Urlaubs-/Abwesend-Plan
+        away = self.conf(CONF_PRESENCE_AWAY)
+        if away and self._state(self.conf(CONF_PRESENCE)) == away:
+            return PLAN_VACATION
         return PLAN_NORMAL
 
     def is_holiday(self) -> bool:
-        """Feiertag heute: Kalender "on" oder Arbeitstag-Sensor "off"."""
+        """Feiertag heute: Kalender "on", Arbeitstag-Sensor "off" oder Urlaub zuhause."""
+        home = self.conf(CONF_PRESENCE_HOME)
+        if home and self._state(self.conf(CONF_PRESENCE)) == home:
+            return True
         workday = self.conf(CONF_WORKDAY)
         if not workday:
             return False
         state = self._state(workday)
         return state == ("on" if workday.startswith("calendar.") else "off")
+
+    def has_holiday_day(self) -> bool:
+        """Es gibt einen eigenen Tag "Feiertag" im Plan."""
+        return bool(
+            self.conf(CONF_WORKDAY)
+            or (self.conf(CONF_PRESENCE) and self.conf(CONF_PRESENCE_HOME))
+        )
 
     def day_key(self, when: datetime, now: datetime | None = None) -> str:
         now = now or dt_util.now()
@@ -458,6 +482,11 @@ class HeizplanRoom:
             CONF_MODE_HEAT: self.conf(CONF_MODE_HEAT),
             CONF_MODE_VACATION: self.conf(CONF_MODE_VACATION),
             CONF_WORKDAY: self.conf(CONF_WORKDAY),
+            CONF_PRESENCE: self.conf(CONF_PRESENCE),
+            CONF_PRESENCE_AWAY: self.conf(CONF_PRESENCE_AWAY),
+            CONF_PRESENCE_HOME: self.conf(CONF_PRESENCE_HOME),
+            "holiday": self.is_holiday(),
+            "holiday_day": self.has_holiday_day(),
             CONF_DEFAULT_MODE: self.default_mode,
             CONF_OFF_INACTIVE: bool(self.conf(CONF_OFF_INACTIVE)),
             "plan_keys": self.plan_keys(),
