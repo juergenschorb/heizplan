@@ -61,4 +61,4 @@ Attribute: `active_plan`, `next_change`, `next_mode`, `override_until`, `climate
 
 ## Stand
 
-Version 0.2.0. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
+Version 0.2.1. Mit automatischen Tests geprüft, noch nicht in einer echten Home-Assistant-Instanz.
