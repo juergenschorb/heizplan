@@ -37,9 +37,9 @@ from .const import (
     PLAN_NORMAL,
     PLAN_VACATION,
     STATE_MANUAL,
-    TITLE_SEP,
     STATE_OFF,
     STORAGE_VERSION,
+    TITLE_SEP,
     WORKDAYS,
 )
 
@@ -429,6 +429,8 @@ class HeizplanRoom:
 
     # ---------- Änderungen von außen ----------
     async def async_set_week(self, plan: str, week: dict[str, list[dict[str, Any]]]) -> None:
+        if plan not in (PLAN_NORMAL, PLAN_VACATION):
+            raise ValueError(f"Unbekannter Plan: {plan}")
         stored = dict(self.plans.get(plan, {}))
         stored.pop(HOL, None)  # eigener Feiertag aus Versionen vor 0.3.1
         for day, entries in week.items():

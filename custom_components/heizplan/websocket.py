@@ -7,11 +7,10 @@ from typing import Any
 import voluptuous as vol
 
 from homeassistant.components import websocket_api
-from homeassistant.config_entries import SOURCE_IMPORT
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import config_validation as cv, entity_registry as er
 
-from .const import CONF_CLIMATE, DOMAIN, OPTION_KEYS
+from .const import DOMAIN
 from .room import HeizplanRoom
 
 DAY_SCHEMA = vol.All(
@@ -34,7 +33,6 @@ def async_register_websocket(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, ws_set_week)
     websocket_api.async_register_command(hass, ws_override)
     websocket_api.async_register_command(hass, ws_cancel_override)
-    websocket_api.async_register_command(hass, ws_import)
 
 
 def _room_dict(hass: HomeAssistant, room: HeizplanRoom) -> dict[str, Any]:
@@ -111,37 +109,4 @@ async def ws_cancel_override(hass: HomeAssistant, connection, msg) -> None:
     if (room := _room(hass, connection, msg)) is None:
         return
     await room.async_cancel_override(msg["apply"])
-    connection.send_result(msg["id"], _room_dict(hass, room))
-
-
-@websocket_api.websocket_command(
-    {
-        vol.Required("type"): "heizplan/import",
-        vol.Required("name"): cv.string,
-        vol.Required(CONF_CLIMATE): cv.entity_id,
-        vol.Optional("options", default=dict): dict,
-        vol.Optional("plans", default=dict): vol.Schema({cv.string: WEEK_SCHEMA}),
-    }
-)
-@websocket_api.require_admin
-@websocket_api.async_response
-async def ws_import(hass: HomeAssistant, connection, msg) -> None:
-    """Raum aus der Karte anlegen (Übernahme aus dem Scheduler)."""
-    rooms = hass.data.get(DOMAIN, {})
-    if any(room.climate == msg[CONF_CLIMATE] for room in rooms.values()):
-        connection.send_error(msg["id"], "exists", "Für dieses Thermostat gibt es schon einen Raum")
-        return
-    data = {k: v for k, v in msg["options"].items() if k in OPTION_KEYS and v}
-    data[CONF_CLIMATE] = msg[CONF_CLIMATE]
-    data["name"] = msg["name"]
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN, context={"source": SOURCE_IMPORT}, data=data
-    )
-    entry = result.get("result")
-    room = rooms.get(entry.entry_id) if entry else None
-    if room is None:
-        connection.send_error(msg["id"], "failed", "Raum konnte nicht angelegt werden")
-        return
-    for plan, week in msg["plans"].items():
-        await room.async_set_week(plan, week)
     connection.send_result(msg["id"], _room_dict(hass, room))

@@ -34,9 +34,6 @@
     },
     "error": {
       "climate_in_use": "Für dieses Thermostat gibt es schon einen Raum."
-    },
-    "abort": {
-      "climate_in_use": "Für dieses Thermostat gibt es schon einen Raum."
     }
   },
   "options": {

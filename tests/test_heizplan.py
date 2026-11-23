@@ -287,26 +287,21 @@ async def test_websocket(hass: HomeAssistant, hass_ws_client, calls):
     msg = await client.receive_json()
     assert msg["success"] and msg["result"]["override"] is None
 
-    # Übernahme aus der Karte legt einen Raum mit Plänen an
+    # unbekannte Pläne und Tage werden abgelehnt
     await client.send_json_auto_id(
-        {
-            "type": "heizplan/import",
-            "name": "Bad",
-            "climate": "climate.bad",
-            "options": {"default_mode": "frost", "season_entity": "", "unbekannt": 1},
-            "plans": {"normal": {d: [{"start": 0, "mode": "comfort"}] for d in WEEK}},
-        }
+        {"type": "heizplan/set_week", "entry_id": entry.entry_id, "plan": "foo", "week": WEEK}
     )
     msg = await client.receive_json()
-    assert msg["success"], msg
-    assert msg["result"]["name"] == "Bad" and msg["result"]["default_mode"] == "frost"
-    assert msg["result"]["plans"]["normal"]["mon"] == [{"start": 0, "mode": "comfort"}]
-    assert calls["preset"][-1].data == {"entity_id": "climate.bad", "preset_mode": "comfort"}
+    assert not msg["success"] and msg["error"]["code"] == "invalid"
     await client.send_json_auto_id(
-        {"type": "heizplan/import", "name": "Bad", "climate": "climate.bad"}
+        {"type": "heizplan/set_week", "entry_id": entry.entry_id, "plan": "normal", "week": {"xyz": []}}
     )
     msg = await client.receive_json()
-    assert not msg["success"] and msg["error"]["code"] == "exists"
+    assert not msg["success"] and msg["error"]["code"] == "invalid"
+    # der Import aus dem Scheduler ist entfernt
+    await client.send_json_auto_id({"type": "heizplan/import", "name": "Bad", "climate": "climate.bad"})
+    msg = await client.receive_json()
+    assert not msg["success"]
 
 
 async def test_remove_entry_deletes_storage(hass: HomeAssistant, hass_storage, freezer, calls):
