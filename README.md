@@ -4,7 +4,7 @@
 
 Home-Assistant-Integration für Wochenpläne je Raum. Sie schaltet ein Raumthermostat (z. B. Versatile Thermostat oder Better Thermostat) zu festen Zeiten zwischen **Komfort**, **Eco** und **Frostschutz** um. Bedient wird sie mit der [Heizplan Card](https://github.com/juergenschorb/claude-homeassistant).
 
-Die Integration ersetzt die Scheduler-Komponente für die Heizplan Card: Statt vieler einzelner Zeitpläne gibt es genau einen Plan je Raum, gespeichert in Home Assistant.
+Statt vieler einzelner Zeitpläne gibt es genau einen Plan je Raum, gespeichert in Home Assistant. Die Scheduler-Komponente wird nicht gebraucht.
 
 ## Funktionen
 
@@ -27,9 +27,7 @@ Seit Home Assistant 2026.11 ist HACS als „Marketplace“ eingebaut. Ein vorhan
 
 ## Räume anlegen
 
-**Aus der Karte (empfohlen bei vorhandenen Plänen):** Läuft ein Raum bisher über den Scheduler, zeigt die Heizplan Card den Knopf **„Raum in Heizplan übernehmen“**. Er legt den Raum mit dem bisherigen Wochenplan und den Einstellungen der Karte an und entfernt die Zeitpläne aus dem Scheduler. Dafür muss man als Administrator angemeldet sein.
-
-**Von Hand:** *Einstellungen → Geräte & Dienste → Integration hinzufügen → Heizplan*.
+*Einstellungen → Geräte & Dienste → Integration hinzufügen → Heizplan*.
 
 | Feld | Bedeutung |
 |---|---|

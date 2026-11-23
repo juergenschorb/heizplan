@@ -115,13 +115,6 @@ class HeizplanConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
         )
 
-    async def async_step_import(self, import_data: dict[str, Any]) -> ConfigFlowResult:
-        if self._climate_in_use(import_data[CONF_CLIMATE]):
-            return self.async_abort(reason="climate_in_use")
-        return self.async_create_entry(
-            title=str(import_data[CONF_NAME]).strip(), data=_clean(import_data)
-        )
-
 
 class HeizplanOptionsFlow(OptionsFlow):
     """Thermostat und Bedingungen eines Raums ändern."""
