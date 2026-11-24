@@ -90,6 +90,15 @@
           "off": "No plan active",
           "manual": "Manual"
         }
+      },
+      "today": {
+        "name": "Plan today"
+      },
+      "next_change": {
+        "name": "Next change"
+      },
+      "target": {
+        "name": "Target temperature"
       }
     }
   }

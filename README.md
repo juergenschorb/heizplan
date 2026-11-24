@@ -6,6 +6,14 @@ Home-Assistant-Integration für Wochenpläne je Raum. Sie schaltet ein Raumtherm
 
 Statt vieler einzelner Zeitpläne gibt es genau einen Plan je Raum, gespeichert in Home Assistant. Die Scheduler-Komponente wird nicht gebraucht.
 
+## Anzeige in der Integration (ab 0.5.0)
+
+Auf der Geräteseite jedes Raums gibt es zusätzlich:
+
+- **Plan heute**: die Zeiten von heute als Text, z. B. `00:00 Eco 17 °C · 06:30 Komfort 21,5 °C · 22:00 Eco 17 °C`. In den Attributen steht die ganze Woche (`normal_Mo` … `normal_So`, ebenso für den zweiten Plan).
+- **Nächster Wechsel**: Zeitpunkt des nächsten Moduswechsels, im Attribut der neue Modus.
+- **Solltemperatur**: Temperatur des aktuellen Modus. Sie wird aus den Preset-Zahlen des Thermostats gelesen (Versatile Thermostat, Better Thermostat); fehlen sie, bleibt der Wert leer und der Plan zeigt nur die Modi.
+
 ## Funktionen
 
 - Ein Eintrag je Raum mit Thermostat, Wochenplan Mo–So; an Feiertagen (Mo–Fr) gilt der Sonntag
