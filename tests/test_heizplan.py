@@ -474,3 +474,17 @@ async def test_floor_in_title(hass: HomeAssistant, freezer, calls):
     er.async_get(hass).async_update_entity(CL, area_id=None)
     await hass.async_block_till_done()
     assert entry.title == "Stube 2"
+
+
+async def test_readable_plan_sensors(hass: HomeAssistant, freezer: FrozenDateTimeFactory):
+    freezer.move_to(datetime(2026, 11, 23, 7, 0, tzinfo=dt_util.get_default_time_zone()))
+    entry = await setup_room(hass)
+    r = room(hass, entry)
+    await r.async_set_week("normal", {"mon": [{"start": 0, "mode": "eco"}, {"start": 390, "mode": "comfort"}, {"start": 1320, "mode": "eco"}]})
+    await hass.async_block_till_done()
+    today = [s for s in hass.states.async_all("sensor") if s.entity_id.endswith("_plan_heute") or s.entity_id.endswith("_plan_today")]
+    assert today, [s.entity_id for s in hass.states.async_all("sensor")]
+    assert today[0].state == "00:00 Eco · 06:30 Komfort · 22:00 Eco"
+    assert today[0].attributes["normal_Mo"] == today[0].state
+    nxt = [s for s in hass.states.async_all("sensor") if "next_change" in s.entity_id or "nachster" in s.entity_id or "wechsel" in s.entity_id]
+    assert nxt

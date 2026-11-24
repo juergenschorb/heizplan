@@ -10,6 +10,7 @@ from typing import Any
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import (
     async_track_state_change_event,
     async_track_time_change,
@@ -46,6 +47,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 STEP = 15
+MODE_LABELS = {"comfort": "Komfort", "eco": "Eco", "frost": "Frostschutz"}
 OFF_MARKER = "__inactive__"
 OLD_OFF_MARKER = "__off__"
 
@@ -300,6 +302,36 @@ class HeizplanRoom:
                 if entry["mode"] != mode:
                     return day + timedelta(minutes=entry["start"]), entry["mode"]
         return None
+
+    def preset_temperature(self, mode: str) -> float | None:
+        """Temperatur des Presets aus den number-Entitäten des Thermostat-Geräts (VT, Better Thermostat)."""
+        registry = er.async_get(self.hass)
+        own = registry.async_get(self.climate)
+        if own is None or own.device_id is None:
+            return None
+        names = {"comfort": ("comfort",), "eco": ("eco",), "frost": ("frost", "away")}[mode]
+        for ent in er.async_entries_for_device(registry, own.device_id):
+            if ent.domain != "number":
+                continue
+            key = f"{ent.entity_id} {ent.translation_key or ''}".lower()
+            if any(f"preset_{n}" in key for n in names):
+                state = self._state(ent.entity_id)
+                try:
+                    return float(state) if state is not None else None
+                except ValueError:
+                    return None
+        return None
+
+    def day_text(self, plan: str, day: str) -> str:
+        """Ein Tag lesbar, z. B. "00:00 Eco 17 °C · 06:00 Komfort 21,5 °C"."""
+        parts = []
+        for e in self.entries(plan, day):
+            temp = self.preset_temperature(e["mode"]) if e["mode"] in MODE_LABELS else None
+            text = f"{e['start'] // 60:02d}:{e['start'] % 60:02d} {MODE_LABELS.get(e['mode'], e['mode'])}"
+            if temp is not None:
+                text += f" {temp:g}".replace(".", ",") + " °C"
+            parts.append(text)
+        return " · ".join(parts)
 
     def preset_for(self, mode: str) -> str:
         """Better Thermostat kennt kein "frost": dann "away"."""

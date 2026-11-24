@@ -90,6 +90,15 @@
           "off": "Kein Plan aktiv",
           "manual": "Manuell"
         }
+      },
+      "today": {
+        "name": "Plan heute"
+      },
+      "next_change": {
+        "name": "Nächster Wechsel"
+      },
+      "target": {
+        "name": "Solltemperatur"
       }
     }
   }
